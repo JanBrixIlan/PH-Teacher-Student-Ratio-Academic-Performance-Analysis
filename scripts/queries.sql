@@ -10,6 +10,7 @@ SELECT *
 FROM DepEDdb.DBO.PERSONNEL_2023_24;
 
 -- Query to combine necessary enrollment, personnel, and NAT data for analysis
+-- To be extracted as a spreadsheet "master_school_data_2023_24"
 SELECT
     -- School information
     e.school_id,
