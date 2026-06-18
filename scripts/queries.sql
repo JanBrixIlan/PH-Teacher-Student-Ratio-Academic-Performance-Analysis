@@ -52,3 +52,80 @@ JOIN depeddb.dbo.personnel_2023_24 AS p
     ON e.school_id = p.school_id
 JOIN depeddb.dbo.nat_2023_24 AS n
     ON e.school_id = n.school_id;
+
+
+-- Aggregations by region
+SELECT
+    e.region,
+    -- Total enrollment
+    SUM(e.kinder_male + e.kinder_female) as total_kinder,
+    SUM(e.g1_male + e.g1_female) as total_g1,
+    
+    -- Total teachers
+    SUM(
+        ISNULL(p.es_teacher_i, 0) + 
+        ISNULL(p.es_teacher_ii, 0) + 
+        ISNULL(p.es_teacher_iii, 0) +
+        ISNULL(p.es_master_teacher_i, 0) + 
+        ISNULL(p.es_master_teacher_ii, 0) + 
+        ISNULL(p.es_master_teacher_iii, 0) + 
+        ISNULL(p.es_master_teacher_iv, 0)
+    ) as total_teachers,
+    
+    -- Average NAT results
+    ROUND(AVG(n.math_mps), 2) as avg_math_mps,
+    ROUND(AVG(n.overall_mps), 2) as avg_overall_mps
+FROM depeddb.dbo.enrollment_2023_24 AS e
+JOIN depeddb.dbo.personnel_2023_24 AS p
+    ON e.school_id = p.school_id
+JOIN depeddb.dbo.nat_2023_24 AS n
+    ON e.school_id = n.school_id
+GROUP BY e.region
+ORDER BY avg_math_mps DESC;
+
+
+--DEMONSTRATIONS
+-- Average NAT scores by region
+SELECT
+    e.region,
+    COUNT(DISTINCT e.school_id) AS total_schools,
+    ROUND(AVG(n.overall_mps), 2) AS avg_overall_mps,
+    ROUND(AVG(n.math_mps), 2) AS avg_math_mps
+FROM depeddb.dbo.enrollment_2023_24 AS e
+JOIN depeddb.dbo.nat_2023_24 AS n
+    ON e.school_id = n.school_id
+GROUP BY e.region
+ORDER BY avg_overall_mps DESC;
+
+-- Master Teacher status
+SELECT
+    e.school_id,
+    e.school_name,
+    CASE 
+        WHEN p.es_master_teacher_i + p.es_master_teacher_ii + 
+             p.es_master_teacher_iii + p.es_master_teacher_iv > 0 
+        THEN 'Has Master Teacher'
+        ELSE 'No Master Teacher'
+    END AS master_teacher_status,
+    n.overall_mps
+FROM depeddb.dbo.enrollment_2023_24 AS e
+JOIN depeddb.dbo.personnel_2023_24 AS p ON e.school_id = p.school_id
+JOIN depeddb.dbo.nat_2023_24 AS n ON e.school_id = n.school_id;
+
+-- Rank schools by performance within their region
+SELECT
+    e.region,
+    e.school_name,
+    n.overall_mps,
+    RANK() OVER (PARTITION BY e.region ORDER BY n.overall_mps DESC) AS regional_rank
+FROM depeddb.dbo.enrollment_2023_24 AS e
+JOIN depeddb.dbo.nat_2023_24 AS n ON e.school_id = n.school_id;
+
+-- Average NAT Scores by region using CTEs
+WITH regional_avg AS (
+    SELECT n.region, ROUND(AVG(overall_mps), 2) AS avg_mps
+    FROM depeddb.dbo.nat_2023_24 n
+    JOIN depeddb.dbo.enrollment_2023_24 e ON n.school_id = e.school_id
+    GROUP BY n.region
+)
+SELECT * FROM regional_avg ORDER BY avg_mps DESC;
