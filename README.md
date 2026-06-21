@@ -45,3 +45,10 @@ PH-Teacher-Student-Ratio-Academic-Performance-Analysis/
 ## Setup
 1. Run scripts/create_database.py to load data into SQL Server
 2. Open notebooks/analysis.ipynb to run the analysis
+
+## Current Status
+✅ Data Cleaning
+✅ Exploratory Analysis
+✅ SQL Data Extraction & Transformation
+🟡 Dashboard (In Progress)
+⬜ Final Insights Page

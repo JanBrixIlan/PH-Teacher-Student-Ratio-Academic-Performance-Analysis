@@ -53,7 +53,7 @@ CREATE TABLE dbo.master_school_data_2023_24 (
 );
 
 -- Overview of the table
-SELECT * FROM dbo.master_school_data_2023_24
+SELECT * FROM dbo.master_school_data_2023_24;
 
 -- Creating a 'country' column for Power BI
 ALTER TABLE dbo.master_school_data_2023_24
@@ -62,3 +62,35 @@ ADD country NVARCHAR(100);
 -- Setting 'country' column to 'Philippines'
 UPDATE dbo.master_school_data_2023_24
 SET country = 'Philippines';
+
+-- Setting NULL to 0
+UPDATE dbo.master_school_data_2023_24
+SET teacher_student_ratio = 0
+WHERE teacher_student_ratio IS NULL;
+
+-- Replacing CAR with Cordillera Administrative Region
+UPDATE dbo.master_school_data_2023_24
+SET region = 'Cordillera Administrative Region'
+WHERE region = 'CAR';
+
+UPDATE dbo.ellna_2023_24
+SET region = 'Cordillera Administrative Region'
+WHERE region = 'CAR';
+
+UPDATE dbo.enrollment_2023_24
+SET region = 'Cordillera Administrative Region'
+WHERE region = 'CAR';
+
+UPDATE dbo.learners_2023_24
+SET region = 'Cordillera Administrative Region'
+WHERE region = 'CAR';
+
+UPDATE dbo.nat_2023_24
+SET region = 'Cordillera Administrative Region'
+WHERE region = 'CAR';
+
+-- Replacing 'division' with 'province'
+EXEC sp_rename
+    'dbo.master_school_data_2023_24.division',
+    'province',
+    'COLUMN'
