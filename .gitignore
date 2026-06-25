@@ -14,3 +14,5 @@ Thumbs.db
 
 # Large data files
 *.csv over 100MB
+
+.vs/
